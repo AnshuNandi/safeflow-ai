@@ -115,13 +115,13 @@ Every dataset used in this project is 100% free, open-access, and requires zero 
 │ - dispatch_emergency_corridor(junction_id, lane, priority)     │  │                                                             │
 │ - notify_municipal_police_and_ems(location, event_type)        │  │ [Eclipse SUMO Simulator]  ◄──►  [FastAPI Backend Server]    │
 │ - broadcast_neighbor_handshake(target_junc, platoon, eta)      │  │  - Krauss car-following         - Bi-directional WebSockets │
-│ - transmit_dynamic_vms_advisory(lane_id, recommendation)       │  │  - TraCI signal phase control   - REST APIs (CORS Enabled)  │
-└────────────────────────────────────────────────────────────────┘  │  - Delay & CO2 logging                     │                │
+│ - transmit_dynamic_vms_advisory(lane_id, recommendation)       │  │  - TraCI signal phase control   - Dynamic A* Rerouting Path │
+└────────────────────────────────────────────────────────────────┘  │  - Delay & CO2 validation                  │                │
                                                                     │                                            ▼                │
-                                                                    │                                  [Modern React.js Client]   │
-                                                                    │                                   - 30 FPS Canvas Stream    │
-                                                                    │                                   - Recharts Telemetry      │
-                                                                    │                                   - Manual Emergency Lock   │
+                                                                    │                                  [Operator GIS Dashboard]   │
+                                                                    │                                   - Real-time Video Stream  │
+                                                                    │                                   - OpenStreetMap Road Graph│
+                                                                    │                                   - Multi-Junction Wave Lock│
                                                                     └─────────────────────────────────────────────────────────────┘
 ```
 
