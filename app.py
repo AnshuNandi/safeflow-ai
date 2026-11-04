@@ -322,7 +322,8 @@ with tab_perception:
                     avg_fps = sum(fps_history) / len(fps_history)
 
                     # Update video frame live
-                    frame_placeholder.image(annotated_frame, channels="BGR", width="stretch")
+                    frame_placeholder.image(annotated_frame, channels="BGR", use_container_width=True)
+                    time.sleep(0.01)
 
                     # Track unique vehicle IDs over the stream session (cumulative traffic throughput)
                     if results.boxes.id is not None:
@@ -375,7 +376,7 @@ with tab_perception:
                 if prev_path and os.path.exists(prev_path):
                     prev_img = cv2.imread(prev_path)
                     if prev_img is not None:
-                        frame_placeholder.image(prev_img, channels="BGR", width="stretch")
+                        frame_placeholder.image(prev_img, channels="BGR", use_container_width=True)
                 telemetry_placeholder.info("Click **'▶️ Start Live Real-Time YOLO Inference'** above to launch the live computer vision processing loop.")
 
         elif display_mode == "🎬 Smooth Rendered Detection Video (H.264)":
