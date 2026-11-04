@@ -321,9 +321,10 @@ with tab_perception:
                     fps_history.append(current_fps)
                     avg_fps = sum(fps_history) / len(fps_history)
 
-                    # Update video frame live
-                    frame_placeholder.image(annotated_frame, channels="BGR", use_container_width=True)
-                    time.sleep(0.01)
+                    # Encode to optimized JPEG buffer to prevent WebSocket congestion on cloud
+                    _, encoded_buf = cv2.imencode('.jpg', annotated_frame, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+                    frame_placeholder.image(encoded_buf.tobytes(), channels="BGR", use_container_width=True)
+                    time.sleep(0.04)
 
                     # Track unique vehicle IDs over the stream session (cumulative traffic throughput)
                     if results.boxes.id is not None:
