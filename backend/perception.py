@@ -7,6 +7,7 @@ Implements:
 4. Lane-level classification and PCU density aggregation.
 """
 
+import os
 from typing import Dict, List, Tuple, Any, Optional
 import numpy as np
 import cv2
@@ -18,7 +19,7 @@ except ImportError:
     YOLO_AVAILABLE = False
 
 
-# COCO class IDs mapped to Indian traffic vehicle types
+# Default COCO class IDs mapped to vehicle types
 COCO_VEHICLE_MAP = {
     2: "car",
     3: "motorcycle",
@@ -26,16 +27,38 @@ COCO_VEHICLE_MAP = {
     7: "truck"
 }
 
+# Optional custom weight paths (checked automatically if fine-tuned model exists)
+CUSTOM_WEIGHT_CANDIDATES = [
+    os.path.join("weights", "safeflow_idd.pt"),
+    os.path.join("weights", "best.pt"),
+    "safeflow_idd_best.pt"
+]
+
 
 class TrafficPerceptionEngine:
-    def __init__(self, model_name: str = "yolov8n.pt", confidence_thresh: float = 0.35):
+    def __init__(self, model_name: Optional[str] = None, confidence_thresh: float = 0.35):
         self.conf_thresh = confidence_thresh
         self.model = None
+        self.is_custom_model = False
+
+        # Check if custom fine-tuned weights exist unless an explicit model_name is passed
+        selected_model = model_name
+        if not selected_model:
+            for cand in CUSTOM_WEIGHT_CANDIDATES:
+                if os.path.exists(cand):
+                    selected_model = cand
+                    self.is_custom_model = True
+                    break
+            if not selected_model:
+                selected_model = "yolov8n.pt"
+
+        self.model_path = selected_model
+
         if YOLO_AVAILABLE:
             try:
-                self.model = YOLO(model_name)
+                self.model = YOLO(self.model_path)
             except Exception as e:
-                print(f"Warning: Could not initialize YOLO model: {e}")
+                print(f"Warning: Could not initialize YOLO model from {self.model_path}: {e}")
 
     def process_frame(
         self,
