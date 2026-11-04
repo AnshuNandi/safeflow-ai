@@ -1,0 +1,16 @@
+# Core Computer Vision & Deep Learning
+ultralytics>=8.3.0
+opencv-python>=4.10.0
+
+# Numerical & Data Processing
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Web Dashboard & Interactive GIS Mapping
+streamlit>=1.40.0
+plotly>=5.24.0
+
+# Microscopic Traffic Simulation (TraCI interface)
+traci>=1.21.0
+sumolib>=1.21.0
+

@@ -192,17 +192,25 @@ Every dataset used in this project is 100% free, open-access, and requires zero 
      * Both vehicles remain stationary together for $\ge 2.0\text{ seconds}$ (Kinetic Freeze).
   3. **Instant Action:** The upstream signal turns RED immediately to stop oncoming traffic from entering the crash zone, and an automated alert is dispatched.
 
-### 4.9 Feature 9: Automated Emergency Vehicle Preemption (Ambulance / Fire)
-* **The Plain Concept:** Give ambulances an immediate green light so patients reach the hospital during the life-saving "Golden Hour".
+### 4.9 Feature 9: Automated Emergency Vehicle Preemption & Early Phase Truncation
+* **The Plain Concept:** Give ambulances an immediate green light so patients reach the hospital during the life-saving "Golden Hour", but do NOT leave the light green once the ambulance has already crossed.
 * **How It Works Technically:**
-  1. YOLO identifies emergency vehicles via visual livery and roof light bars.
-  2. The controller immediately overrides normal cycling: the emergency corridor gets an instant $60\text{s}$ green phase, while conflicting phases are held safely at red.
+  1. YOLO identifies emergency vehicles via visual livery and roof light bars (or siren acoustic detection).
+  2. The controller overrides normal cycling: the emergency corridor is allocated an initial upper-bound 30.0s clearance window, while conflicting arms hold on safety red.
+  3. **Early Phase Truncation:** Downstream CCTV perception and ByteTrack tracker monitor the junction exit polygon. As soon as the ambulance bounding box clears the intersection boundary (typically 8–12 seconds), the emergency preemption is truncated immediately.
+  4. The system transitions through a 3.0s Amber + 1.0s All-Red clearance and returns the intersection to normal Webster autonomous equilibrium without starving other lanes.
 
-### 4.10 Feature 10: Post-Preemption Phase Recovery Cycle
-* **The Plain Concept:** After an ambulance passes, the other lanes are jammed. The system must clear the backlog smoothly without gridlocking.
+### 4.10 Feature 10: Exclusive All-Red Pedestrian Safety Phase (IRC: 103 / IRC: 93 Norms)
+* **The Plain Concept:** In dense Indian intersections, allowing cars to turn on a green light creates a dangerous conflict point with pedestrians walking on zebra crossings. The system must eliminate this collision hazard.
 * **How It Works Technically:**
-  1. Once the ambulance clears the intersection polygon, the system does not abruptly snap back.
-  2. It runs a balanced recovery cycle that allocates bonus green time to the held approaches, clearing queues within two cycles.
+  1. **Turning Conflict Recognition:** When a vehicular arm has Green, through traffic moves safely, but left/right-turning vehicles intersect perpendicular zebra crossings where pedestrians attempt to cross.
+  2. **AI Crowd Perception (YOLOv8 Class 0 - Person):** Roadside CCTV cameras monitor the sidewalk waiting pads and crosswalk curbs. When pedestrian waiting count >= 3 persons OR waiting delay >= 45s, the system schedules an **Exclusive All-Red Pedestrian Phase (Pedestrian Scramble)**.
+  3. **Conflict-Free All-Red Actuation:**
+     - All 4 vehicular signals (North, South, East, West) turn solid **RED [STOP]**.
+     - All vehicular turning movements are held at zero velocity.
+     - All 4 pedestrian zebra crosswalks illuminate with green walk indicators for 15.0s (T_ped = 12m / 1.0m/s + 5s = 17s ~ 15s under IRC: 103).
+     - Pedestrians cross in total safety with zero vehicular turning conflicts.
+  4. **Cycle Budget Invariant:** The 15.0s pedestrian phase is incorporated directly into the master cycle budget (C_cycle = sum(G_i) + T_ped + L = 120.0s), preserving mathematical cycle conservation.
 
 ### 4.11 Feature 11: Competing Emergency Priority Arbitration
 * **The Plain Concept:** If two ambulances arrive at the same time from perpendicular directions, they cannot both get green (which would cause a head-on collision).

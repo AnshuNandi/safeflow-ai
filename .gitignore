@@ -1,0 +1,39 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python byte-compiled / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Large binary model weights (track via DVC or release assets)
+*.pt
+*.onnx
+
+# Ignore all video files except the single primary traffic clip for teammates
+data/sample_videos/*.mp4
+data/sample_videos/*.avi
+data/sample_videos/*.mov
+data/uploads/
+# Only include the 1.9MB primary CCTV clip:
+!data/sample_videos/traffic_normal.mp4
+!data/sample_videos/.gitkeep
+
+# IDE, OS & Assistant config directories
+.vscode/
+.idea/
+.agents/
+.claude/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files and logs
+*.log
+*.tmp
+update_plan.py
